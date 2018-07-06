@@ -6,7 +6,7 @@ import { queries } from "./queries";
 
 const assert = (condition, message) => {
     if (!condition) {
-        return new Error(`${condition} was not truthy: ${message}`);
+        return new Error(`${message}`);
     }
     return; // eslint-disable-line
 };
@@ -52,11 +52,10 @@ describe("Basic", () => {
         graphql(Schema, queries.CREATE_DATA_SOURCE_QUERY, root)
             .then(data => {
                 const { createDataSource: { id, name, type, config } } = data.data;
-                const msg = "error creating datasource - problem with: ";
-                const err = assert(data !== undefined, `${msg}data is undefined`)
-                    || assert(name === "TestDataSource", msg + name)
-                    || assert(type === "Postgres", msg + type)
-                    || assert(typeof config === typeof "", msg + config);
+                const err = assert(data !== undefined, "Unexpected value for result")
+                    || assert(name === "TestDataSource", "Unexpected value for name")
+                    || assert(type === "Postgres", "Unexpected value for type")
+                    || assert(typeof config === typeof "", "Unexpected value for config");
                 if (err) {
                     throw err;
                 }
@@ -86,11 +85,10 @@ describe("Basic", () => {
         graphql(Schema, queries.CREATE_DATA_SOURCE_QUERY, root)
             .then(data => {
                 const { createDataSource: { id, name, type, config } } = data.data;
-                const msg = "error creating editing datasource - problem with: ";
-                const err = assert(data !== undefined, msg + data)
-                    || assert(name === "TestDataSource", msg + name)
-                    || assert(type === "Postgres", msg + type)
-                    || assert(typeof config === typeof "", msg + config);
+                const err = assert(data !== undefined, "Unexpected value for result")
+                    || assert(name === "TestDataSource", "Unexpected value for name")
+                    || assert(type === "Postgres", "Unexpected value for type")
+                    || assert(typeof config === typeof "", "Unexpected value for config");
                 if (err) {
                     throw err;
                 }
