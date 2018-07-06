@@ -56,3 +56,28 @@ span.list-item-name {
 .nav-tabs > li > a:hover{
     border: 1px solid lightgrey;
 }
+
+div.col-schema-editor {
+    padding-left: 0px;
+    padding-right: 5px;
+    background-color: lightgrey;
+}
+
+div.col-schema-tree {
+    padding-right: 0px;
+    padding-left: 5px;
+    background-color: lightgrey;
+}
+
+div.div-schema-editor {
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    border-right: 1px solid darkgrey;
+}
+
+div.div-schema-tree {
+    background-color: white;
+    height: 100%;
+    border-left: 1px solid darkgrey;
+}

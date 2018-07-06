@@ -20,7 +20,7 @@ const App = () => (
                 <p>My Data Sync API</p>
             </div>
 
-            <TabContainer id="my-data-sync-tabs" defaultActiveKey={0}>
+            <TabContainer id="my-data-sync-tabs" defaultActiveKey={1}>
                 <div>
                     {/* Tabs */}
                     <Nav bsClass="nav nav-tabs">
