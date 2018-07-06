@@ -7,14 +7,14 @@ class SchemaContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            height: window.innerHeight - 210
+            height: window.innerHeight - 209
         };
     }
 
     updateDimensions() {
         console.log(window.innerHeight);
         this.setState({
-            height: window.innerHeight - 210
+            height: window.innerHeight - 209
         });
     }
 

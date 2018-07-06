@@ -60,24 +60,24 @@ span.list-item-name {
 div.col-schema-editor {
     padding-left: 0px;
     padding-right: 5px;
-    background-color: lightgrey;
+    background-color: #f5f5f5;
 }
 
 div.col-schema-tree {
     padding-right: 0px;
     padding-left: 5px;
-    background-color: lightgrey;
+    background-color: #f5f5f5;
 }
 
 div.div-schema-editor {
     background-color: white;
     height: 100%;
     width: 100%;
-    border-right: 1px solid darkgrey;
+    border-right: 1px solid lightgrey;
 }
 
 div.div-schema-tree {
     background-color: white;
     height: 100%;
-    border-left: 1px solid darkgrey;
+    border-left: 1px solid lightgrey;
 }
