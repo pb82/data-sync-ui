@@ -2,22 +2,19 @@ import { database as db } from "../models";
 
 export function runHealthChecks() {
     // Checks database connectivity by auth attempt
-    function databaseConnectivityCheck () {
-        return db.authenticate()
+    function databaseConnectivityCheck() {
+        return db.authenticate();
     }
 
-    function handleResolve ({label, promise}) {
-        promise = promise.then(() => {
-            return {[label]: true};
-        });
-        return {label, promise};
+    function handleResolve({ label, promise }) {
+        return { label, promise: promise.then(() => ({ [label]: true })) };
     }
 
-    function handleReject ({label, promise}) {
+    function handleReject({ label, promise }) {
         return promise.catch(err => {
             console.error(err);
-            return {[label]: false};
-        })
+            return { [label]: false };
+        });
     }
 
     /**
@@ -32,14 +29,18 @@ export function runHealthChecks() {
      * @param results
      * @returns {{ok: boolean, checks: *}}
      */
-    function summarize (results) {
+    function summarize(results) {
         const overallStatus = {
             ok: false,
             checks: results
         };
 
-        overallStatus.ok = results.reduce((acc, result) => {
-            return acc && Object.values(result).reduce((acc, val) => acc && val, true);
+        overallStatus.ok = results.reduce((outer, result) => {
+            const pass = outer && Object.values(result).reduce((inner, val) => {
+                const innerPass = inner && val;
+                return innerPass;
+            }, true);
+            return pass;
         }, true);
 
         return overallStatus;
@@ -53,10 +54,11 @@ export function runHealthChecks() {
      *   {check2: <check2 status>}
      * ]
      */
-    function run () {
+    function run() {
         // Add additional health checks to this array
         const checks = [{
-            label: 'Database Connectivity', promise: databaseConnectivityCheck()
+            label: "Database Connectivity",
+            promise: databaseConnectivityCheck()
         }].map(handleResolve).map(handleReject);
 
         return Promise.all(checks);
