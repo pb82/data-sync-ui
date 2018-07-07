@@ -1,6 +1,6 @@
 import { buildSchema } from "graphql";
 import { info } from "../logger";
-import { dataSource } from "../models";
+import { dataSource, schema } from "../models";
 
 const Schema = buildSchema(`
     enum DataSourceType {
@@ -10,17 +10,24 @@ const Schema = buildSchema(`
     type Query {
         dataSources: [DataSource],
         getOneDataSource(id: Int!): DataSource
+        getSchema: Schema
     },
     type Mutation {
         createDataSource(name: String!, type: DataSourceType!, config: String!): DataSource
         deleteDataSource(id: Int!): DataSource
-        updateDataSource(id: Int!, name: String!, type: DataSourceType!, config: String!): DataSource
+        updateDataSource(id: Int!, name: String!, type: DataSourceType!, config: String!): DataSource        
     },  
     type DataSource {
         id: Int!
         name: String!
         type: DataSourceType! 
         config: String!
+    },
+    type Schema {
+        id: Int!
+        name: String!
+        source: String!
+        compiled: String!
     }
 `);
 
@@ -63,12 +70,29 @@ const updateDataSource = ({ id, name, type, config }) => {
     }));
 };
 
+const getSchema = () => {
+    info("getSchema request");
+    return schema.findOrCreate({
+        where: { name: "default" },
+        defaults: {
+            source: "# Your Schema goes here",
+            compiled: ""
+        }
+    }).spread((defaultSchema, created) => {
+        if (created) {
+            info("Created default schema");
+        }
+        return defaultSchema;
+    });
+};
+
 const root = {
     dataSources: listDataSources,
     createDataSource,
     getOneDataSource,
     deleteDataSource,
-    updateDataSource
+    updateDataSource,
+    getSchema
 };
 
 export { Schema, root };

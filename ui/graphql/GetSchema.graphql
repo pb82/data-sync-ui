@@ -1,0 +1,7 @@
+query GetSchema {
+    getSchema {
+        name
+        source
+        compiled
+    }
+}

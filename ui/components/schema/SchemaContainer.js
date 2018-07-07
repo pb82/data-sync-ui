@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { CommonToolbar } from "../common";
 import { Grid, Row, Col } from "patternfly-react";
+import { Editor } from "./Editor"
+import GetSchema from "../../graphql/GetSchema.graphql";
+import { Query } from "react-apollo";
 
 class SchemaContainer extends Component {
 
@@ -12,7 +15,6 @@ class SchemaContainer extends Component {
     }
 
     updateDimensions() {
-        console.log(window.innerHeight);
         this.setState({
             height: window.innerHeight - 209
         });
@@ -40,7 +42,7 @@ class SchemaContainer extends Component {
         ];
     }
 
-    render() {
+    renderContent(source) {
         return (
             <div>
                 <CommonToolbar buttons={this.getToolbarButtons()} />
@@ -49,7 +51,7 @@ class SchemaContainer extends Component {
                         <Row>
                             <Col xs={12} md={8} className="col-schema-editor" style={{height: this.state.height}}>
                                 <div className="div-schema-editor">
-
+                                    <Editor source={source}/>
                                 </div>
                             </Col>
                             <Col xs={6} md={4} className="col-schema-tree" style={{height: this.state.height}}>
@@ -61,6 +63,21 @@ class SchemaContainer extends Component {
                     </Grid>
                 </div>
             </div>
+        );
+    }
+
+    render() {
+        return (
+            <Query query={GetSchema}>
+                {({loading, error, data}) => {
+                    if (loading) return (<div>Loading...</div>);
+                    if (error) return (<div>{error.message}</div>);
+
+                    const { source } = data.getSchema;
+
+                    return this.renderContent(source);
+                }}
+            </Query>
         );
     }
 }
