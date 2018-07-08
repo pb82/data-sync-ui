@@ -5,7 +5,7 @@ class Editor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            editorContent: props.source,
+            editorContent: props.value,
             editorLines: 1,
             maxLines: 1
         }
@@ -14,6 +14,11 @@ class Editor extends React.Component {
     componentDidMount() {
         window.addEventListener("resize", () => this.updateMaxLines());
         this.updateMaxLines();
+        this.onEditorContentChange(this.state.editorContent);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", () => this.updateMaxLines());
     }
 
     // TODO: take editor scrolling into account
@@ -50,14 +55,22 @@ class Editor extends React.Component {
         });
     }
 
-    onEditorContentChange({ target }) {
-        const text = target.value;
-
-
+    onEditorContentChange(value) {
+        const text = value;
         this.setState({
             editorContent: text,
             editorLines: this.getLine(text)
         });
+
+        if (this.props.onChange) {
+            this.props.onChange(text);
+        }
+    }
+
+    onSaveSchema() {
+        if (this.props.onSave) {
+            this.props.onSave(this.state.editorContent);
+        }
     }
 
     onEditorKeyDown(e) {
@@ -67,17 +80,10 @@ class Editor extends React.Component {
             const start = ta.selectionStart;
             const end = ta.selectionEnd;
             const value = ta.value;
-
             ta.value = (value.substring(0, start) + "\t" + value.substring(end));
             ta.selectionStart = ta.selectionEnd = start + 1;
-
-            console.log(ta.val);
             e.preventDefault();
         }
-    }
-
-    onSaveSchema() {
-
     }
 
     render() {
@@ -89,13 +95,14 @@ class Editor extends React.Component {
                 <textarea
                     id="editor-content"
                     value={this.state.editorContent}
-                    onChange={(ev) => this.onEditorContentChange(ev)}
+                    onChange={(ev) => this.onEditorContentChange(ev.target.value)}
                     onKeyDown={(ev) => this.onEditorKeyDown(ev)}
                 />
                 <div id="editor-toolbar">
                     <Button
                         style={{float: "left"}}
                         className="btn btn-primary"
+                        onClick={() => {this.onSaveSchema()}}
                     >
                         Save
                     </Button>

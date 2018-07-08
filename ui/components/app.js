@@ -9,7 +9,7 @@ import {
 } from "patternfly-react";
 
 import { DataSourcesContainer } from "./data-sources";
-import { SchemaContainer } from "./schema";
+import SchemaContainer from "./schema/SchemaContainer";
 import { QueriesContainer } from "./queries";
 
 const App = () => (

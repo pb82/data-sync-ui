@@ -2,15 +2,20 @@ import React, { Component } from "react";
 import { CommonToolbar } from "../common";
 import { Grid, Row, Col } from "patternfly-react";
 import { Editor } from "./Editor"
+import { Structure} from "./Structure";
 import GetSchema from "../../graphql/GetSchema.graphql";
-import { Query } from "react-apollo";
+import UpdateSchema from "../../graphql/UpdateSchema.graphql";
+
+import { graphql } from "react-apollo";
 
 class SchemaContainer extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            height: window.innerHeight - 209
+            height: window.innerHeight - 209,
+            compileError: null,
+            compiledSchema: ""
         };
     }
 
@@ -36,13 +41,35 @@ class SchemaContainer extends Component {
         console.log("export clicked")
     }
 
+    onEditorSave(content) {
+        this.props.mutate({
+            variables:{
+                source: content
+            }
+        }).then(({ data }) => {
+            const { updateSchema: { compiled } } = data;
+
+            this.setState({
+                compileError: false,
+                compiledSchema: compiled
+            });
+        }).catch(err => {
+            this.setState({
+                compileError: err,
+                compiledSchema: null
+            });
+        })
+    }
+
     getToolbarButtons() {
         return [
             { title: "Export", cb: () => this.export(), id: "export_schema" }
         ];
     }
 
-    renderContent(source) {
+    renderContent() {
+        const { getSchema: { source, compiled } } = this.props.data;
+
         return (
             <div>
                 <CommonToolbar buttons={this.getToolbarButtons()} />
@@ -51,12 +78,18 @@ class SchemaContainer extends Component {
                         <Row>
                             <Col xs={12} md={8} className="col-schema-editor" style={{height: this.state.height}}>
                                 <div className="div-schema-editor">
-                                    <Editor source={source}/>
+                                    <Editor
+                                        value={source}
+                                        onSave={content => {this.onEditorSave(content)}}
+                                    />
                                 </div>
                             </Col>
                             <Col xs={6} md={4} className="col-schema-tree" style={{height: this.state.height}}>
                                 <div className="div-schema-tree">
-
+                                    <Structure
+                                        error={this.state.compileError}
+                                        schema={this.state.compiledSchema || compiled }
+                                    />
                                 </div>
                             </Col>
                         </Row>
@@ -67,19 +100,14 @@ class SchemaContainer extends Component {
     }
 
     render() {
-        return (
-            <Query query={GetSchema}>
-                {({loading, error, data}) => {
-                    if (loading) return (<div>Loading...</div>);
-                    if (error) return (<div>{error.message}</div>);
+        if (this.props.data.loading) {
+            return <div>Loading...</div>
+        }
 
-                    const { source } = data.getSchema;
-
-                    return this.renderContent(source);
-                }}
-            </Query>
-        );
+        return this.renderContent();
     }
 }
 
-export { SchemaContainer };
+export default graphql(GetSchema)(
+    graphql(UpdateSchema)(SchemaContainer)
+);

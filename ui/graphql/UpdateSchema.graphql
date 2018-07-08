@@ -1,0 +1,6 @@
+mutation UpdateSchema($source: String!) {
+    updateSchema(source: $source) {
+        source
+        compiled
+    }
+}
