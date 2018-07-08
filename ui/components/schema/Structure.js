@@ -1,5 +1,5 @@
 import React from "react";
-import { ListView, ListViewItem, Row, Col, Grid, Button } from "patternfly-react";
+import { ListView, ListViewItem, Row, Col, Grid, Button, Alert } from "patternfly-react";
 
 // Graphql internal types
 const wellKnownTypes = [
@@ -92,7 +92,9 @@ class Structure extends React.Component {
     renderContent() {
         if (this.props.error) {
             return <div>
-                {this.props.error.message}
+                <Alert style={{marginTop: "15px"}}>
+                    {this.props.error.message}
+                </Alert>
             </div>;
         } else {
             if (this.props.schema) {
