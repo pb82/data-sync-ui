@@ -151,3 +151,16 @@ div.line-number {
     font-size: 15px;
     font-weight: bold;
 }
+
+.structure-field-row {
+    font-weight: bold;
+    border-bottom: 1px solid lightgrey;
+    padding-bottom: 5px;
+    height: 32px;
+}
+
+.structure-list-item div.row {
+    margin-top: 5px;
+    font-size: 14px;
+}
+

@@ -85,7 +85,7 @@ class SchemaContainer extends Component {
                                 </div>
                             </Col>
                             <Col xs={6} md={4} className="col-schema-tree" style={{height: this.state.height}}>
-                                <div className="div-schema-tree">
+                                <div className="div-schema-tree" style={{overflow: "auto"}}>
                                     <Structure
                                         error={this.state.compileError}
                                         schema={this.state.compiledSchema || compiled }
