@@ -37,7 +37,7 @@ class Structure extends React.Component {
                         {field.type.name || field.type.kind}
                     </Col>
                     <Col md={4}>
-                        <Button>Add Resolver</Button>
+                        <Button style={{width: "100%"}}>Add Resolver</Button>
                     </Col>
                 </Row>
             );
@@ -89,16 +89,29 @@ class Structure extends React.Component {
         </div>);
     }
 
-    renderContent() {
-        if (this.props.error) {
-            return <div>
+    renderError(message) {
+        return <div>
                 <Alert style={{marginTop: "15px"}}>
-                    {this.props.error.message}
+                    {message}
                 </Alert>
             </div>;
+    }
+
+    renderContent() {
+        if (this.props.error) {
+            return this.renderError(this.props.error.message);
         } else {
             if (this.props.schema) {
-                const types = JSON.parse(this.props.schema).data.__schema.types.filter(type => {
+                const parsed = JSON.parse(this.props.schema);
+                if (parsed.errors) {
+                    const message = parsed.errors.map(error => {
+                        return error.message;
+                    });
+
+                    return this.renderError(message);
+                }
+
+                const types = parsed.data.__schema.types.filter(type => {
                     return wellKnownTypes.indexOf(type.name) < 0;
                 });
 
@@ -114,7 +127,9 @@ class Structure extends React.Component {
             <div className="structure-content">
                 <div className="structure-header">
                     <span>Data Types</span>
-                    <a className="ag-link" target="_blank" href="https://docs.aerogear.org">Learn more 🛈</a>
+                    <a className="ag-link" target="_blank" href="https://docs.aerogear.org">
+                        {"Learn more \u2139"}
+                    </a>
                 </div>
                 <div>
                     {
