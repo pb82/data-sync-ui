@@ -161,15 +161,17 @@ const getSchema = async ({name}) => {
     }
 
     // Compile the schema on the fly...
-    let compiled = "";
+    let compiled = "", valid = false;
     try {
         compiled = await compileSchemaString(defaultSchema.schema);
+        valid = true;
     } catch (err) {
         warn("Schema not valid: ", err);
     }
 
     // ...and add the result to the response object
     defaultSchema.compiled = compiled;
+    defaultSchema.valid = valid;
     return defaultSchema;
 };
 
