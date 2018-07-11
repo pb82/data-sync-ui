@@ -47,16 +47,16 @@ const createDataSource = async ({ name, type, config }) => {
     return created;
 };
 
-const listDataSources = ({ name }) => {
+const listDataSources = ({name}) => {
     info("listDataSources request");
     if (name) {
         const operator = supportsiLike() ? database.Op.iLike : database.Op.like;
-        return dataSource.findAll({ where: { name: { [operator]: `%${name}%` } } });
+        return dataSource.findAll({where: {name: {[operator]: `%${name}%`}}});
     }
     return dataSource.findAll();
 };
 
-const getOneDataSource = ({ id }) => {
+const getOneDataSource = ({id}) => {
     info("getOneDataSource request");
     return dataSource.findById(id);
 };
@@ -146,6 +146,46 @@ const updateSchema = async args => {
     }
 };
 
+const getSchema = async ({name}) => {
+    info("getSchema request");
+
+    const [defaultSchema, created] = await schema.findOrCreate({
+        where: {name},
+        defaults: {
+            schema: "# Add your Schema here"
+        }
+    });
+
+    if (created) {
+        info(`Created a new default with name ${name}`);
+    }
+
+    // Compile the schema on the fly...
+    let compiled = "";
+    try {
+        compiled = await compileSchemaString(defaultSchema.schema);
+    } catch (err) {
+        warn("Schema not valid: ", err);
+    }
+
+    // ...and add the result to the response object
+    defaultSchema.compiled = compiled;
+    return defaultSchema;
+};
+
+const updateSchema = ({schema}) => {
+    info("updateSchema request");
+
+    // Compile the schema for validation purposes
+    return compileSchemaString(schema).then(() => {
+        return getSchema().then(schema => {
+            return schema.update({
+                schema: source
+            });
+        });
+    });
+};
+
 const root = {
     dataSources: listDataSources,
     createDataSource,
@@ -156,4 +196,4 @@ const root = {
     getSchema
 };
 
-module.exports = { Schema, root };
+module.exports = {Schema, root};
