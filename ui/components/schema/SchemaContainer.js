@@ -96,7 +96,7 @@ class SchemaContainer extends Component {
     }
 
     renderContent() {
-        const { getSchema: { schema, compiled } } = this.props.data;
+        const { getSchema: { id, schema, compiled } } = this.props.data;
         return (
             <div>
                 <CommonToolbar buttons={this.getToolbarButtons()} />
@@ -108,7 +108,11 @@ class SchemaContainer extends Component {
                         />
                     </div>
                     <div className={style.right}>
-                        <StructureView compiled={JSON.parse(compiled)} error={this.state.error} />
+                        <StructureView
+                            schemaId={id}
+                            compiled={JSON.parse(compiled)}
+                            error={this.state.error}
+                        />
                     </div>
                 </div>
             </div>

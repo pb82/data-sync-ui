@@ -16,6 +16,16 @@ resolver.belongsTo(dataSource, {
     }
 });
 
+resolver.belongsTo(schema, {
+    onDelete: "cascade",
+    foreignKey: {
+        allowNull: false
+    }
+});
+
+dataSource.hasMany(resolver);
+schema.hasMany(resolver);
+
 const sync = () => database.sync({ force: false });
 
 module.exports = {

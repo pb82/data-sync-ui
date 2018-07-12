@@ -56,3 +56,22 @@ span.list-item-name {
 .nav-tabs > li > a:hover{
     border: 1px solid lightgrey;
 }
+
+.list-group-item-header span.fa-angle-right {
+    border-right: 1px solid lightgrey;
+    font-weight: bold;
+    padding-right: 15px;
+}
+
+.list-group-item-header div.row {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.list-group-item-container div.close {
+    display: none;
+}
+
+.list-group-item {
+    border-bottom: 1px solid lightgrey !important;
+}
