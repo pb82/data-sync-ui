@@ -1,5 +1,6 @@
 query GetResolvers($schemaId: Int!, $type: String!) {
   resolvers(schemaId: $schemaId, type: $type) {
+    id
     type
     field
     responseMapping

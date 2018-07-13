@@ -12,19 +12,32 @@ class TypeList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedResolver: undefined,
             showModal: false,
             fieldName: ""
         };
     }
 
-    deleteResolver() {
+    deleteResolver(resolver) {
         console.log("Delete resolver clicked");
+        console.log(resolver);
+    }
+
+    editResolver(resolver) {
+        console.log("set resolver to");
+        console.log(resolver);
+        this.setState({
+            showModal: true,
+            selectedResolver: resolver,
+            fieldName: resolver.field
+        })
     }
 
     createResolver(fieldName) {
         this.setState({
             fieldName,
-            showModal: true
+            showModal: true,
+            selectedResolver: undefined
         });
     }
 
@@ -51,11 +64,26 @@ class TypeList extends Component {
         });
 
         if (resolver) {
-           return <span
-               style={{width: "100%", textAlign: "center", cursor: "pointer"}}
-               className="pficon pficon-delete"
-               onClick={() => this.deleteResolver(resolver)}
-           />;
+           return (
+               <div style={{textAlign: "center"}}>
+                <span
+                 style={{width: "100%", textAlign: "center", cursor: "pointer", display: "inline"}}
+                 className="pficon pficon-delete"
+                 onClick={() => this.deleteResolver(resolver)}
+                />
+                <span
+                   style={{
+                       width: "100%",
+                       textAlign: "center",
+                       cursor: "pointer",
+                       display: "inline",
+                       marginLeft: "5px"
+                   }}
+                   className="pficon pficon-edit"
+                   onClick={() => this.editResolver(resolver)}
+                />
+               </div>
+            );
         }
 
         return <span
@@ -121,6 +149,7 @@ class TypeList extends Component {
                         field={this.state.fieldName}
                         schemaId={this.props.schemaId}
                         visible={this.state.showModal}
+                        selectedResolver={this.state.selectedResolver}
                         onClose={() => { this.setState({showModal: false})} }/>
                 </Grid>
             </ListViewItem>

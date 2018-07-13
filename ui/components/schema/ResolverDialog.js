@@ -40,7 +40,26 @@ class ResolverDialog extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {...INITIAL_STATE, schemaId: props.schemaId};
+        this.state = {...INITIAL_STATE, schemaId: props.schemaId };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.selectedResolver &&
+            this.props.selectedResolver !== prevProps.selectedResolver) {
+            this.setState({
+                ...this.state,
+                request: this.props.selectedResolver.requestMapping,
+                response: this.props.selectedResolver.responseMapping,
+                dataSource: this.props.selectedResolver.DataSource,
+
+                // We assume that the last edited values were valid
+                validations: {
+                    dataSource: "success",
+                    request: "success",
+                    response: "success"
+                }
+            });
+        }
     }
 
     onClose() {
@@ -49,11 +68,13 @@ class ResolverDialog extends Component {
     }
 
     onAdd() {
-        const { schemaId, field, type } = this.props;
+        const { schemaId, field, type, selectedResolver } = this.props;
+        const id = selectedResolver ? selectedResolver.id : undefined;
         const { dataSource, request, response } = this.state;
 
         this.props.mutate({
             variables: {
+                id,
                 schemaId,
                 field,
                 type,
