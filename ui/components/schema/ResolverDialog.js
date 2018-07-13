@@ -48,6 +48,9 @@ class ResolverDialog extends Component {
             this.props.selectedResolver !== prevProps.selectedResolver) {
             this.setState({
                 ...this.state,
+                type: this.props.type,
+                field: this.props.field,
+                schemaId: this.props.schemaId,
                 request: this.props.selectedResolver.requestMapping,
                 response: this.props.selectedResolver.responseMapping,
                 dataSource: this.props.selectedResolver.DataSource,
@@ -59,11 +62,16 @@ class ResolverDialog extends Component {
                     response: "success"
                 }
             });
+        } else {
+            this.state = {...INITIAL_STATE, schemaId: this.props.schemaId};
         }
     }
 
+    componentDidMount() {
+        console.log("mount");
+    }
+
     onClose() {
-        this.setState(INITIAL_STATE);
         this.props.onClose();
     }
 
@@ -226,7 +234,7 @@ class ResolverDialog extends Component {
                         onClick={() => this.onAdd()}
                         disabled={some(validations, s => !s || s === "error")}
                     >
-                        Add
+                        Save
                     </Button>
                 </Modal.Footer>
             </Modal>
