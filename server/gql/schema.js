@@ -198,48 +198,6 @@ const updateSchema = async args => {
     }
 };
 
-const getSchema = async ({name}) => {
-    info("getSchema request");
-
-    const [defaultSchema, created] = await schema.findOrCreate({
-        where: {name},
-        defaults: {
-            schema: "# Add your Schema here"
-        }
-    });
-
-    if (created) {
-        info(`Created a new default with name ${name}`);
-    }
-
-    // Compile the schema on the fly...
-    let compiled = "", valid = false;
-    try {
-        compiled = await compileSchemaString(defaultSchema.schema);
-        valid = true;
-    } catch (err) {
-        warn("Schema not valid: ", err);
-    }
-
-    // ...and add the result to the response object
-    defaultSchema.compiled = compiled;
-    defaultSchema.valid = valid;
-    return defaultSchema;
-};
-
-const updateSchema = ({schema}) => {
-    info("updateSchema request");
-
-    // Compile the schema for validation purposes
-    return compileSchemaString(schema).then(() => {
-        return getSchema().then(schema => {
-            return schema.update({
-                schema: source
-            });
-        });
-    });
-};
-
 const root = {
     dataSources: listDataSources,
     resolvers: listResolvers,
