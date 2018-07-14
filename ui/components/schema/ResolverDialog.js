@@ -13,17 +13,16 @@ import {
     DropdownButton,
     MenuItem
 } from "patternfly-react";
+import some from "lodash.some";
 import { CodeEditor } from "../common/CodeEditor";
 
 import GetDataSources from "../../graphql/GetDataSources.graphql";
 import UpsertResolver from "../../graphql/UpsertResolver.graphql";
 import GetResolvers from "../../graphql/GetResolvers.graphql";
 
-import some from "lodash.some";
 
 const INITIAL_STATE = {
     err: "",
-    schemaId: null,
     dataSource: {
         name: ""
     },
@@ -40,35 +39,13 @@ class ResolverDialog extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {...INITIAL_STATE, schemaId: props.schemaId };
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.selectedResolver &&
-            this.props.selectedResolver !== prevProps.selectedResolver) {
-            this.setState({
-                ...this.state,
-                type: this.props.type,
-                field: this.props.field,
-                schemaId: this.props.schemaId,
-                request: this.props.selectedResolver.requestMapping,
-                response: this.props.selectedResolver.responseMapping,
-                dataSource: this.props.selectedResolver.DataSource,
-
-                // We assume that the last edited values were valid
-                validations: {
-                    dataSource: "success",
-                    request: "success",
-                    response: "success"
-                }
-            });
-        } else {
-            this.state = {...INITIAL_STATE, schemaId: this.props.schemaId};
-        }
-    }
-
-    componentDidMount() {
-        console.log("mount");
+        this.state = {
+            ...INITIAL_STATE,
+            id: props.id,
+            request: props.request,
+            response: props.response,
+            dataSource: props.dataSource || { name: "" }
+        };
     }
 
     onClose() {
@@ -76,9 +53,8 @@ class ResolverDialog extends Component {
     }
 
     onAdd() {
-        const { schemaId, field, type, selectedResolver } = this.props;
-        const id = selectedResolver ? selectedResolver.id : undefined;
-        const { dataSource, request, response } = this.state;
+        const { schemaId, field, type } = this.props;
+        const { id, dataSource, request, response } = this.state;
 
         this.props.mutate({
             variables: {
@@ -107,7 +83,7 @@ class ResolverDialog extends Component {
     }
 
     onDataSourceChanged(dataSource) {
-        const dsValidation = (!!dataSource) ? "success" : "error";
+        const dsValidation = (dataSource) ? "success" : "error";
 
         const { validations } = this.state;
         const newValidations = { ...validations, dataSource: dsValidation };
@@ -116,7 +92,7 @@ class ResolverDialog extends Component {
     }
 
     onRequestChanged(request) {
-        const resolverValidation = (request && request.length > 0) ? "success" : "error" ;
+        const resolverValidation = (request && request.length > 0) ? "success" : "error";
 
         const { validations } = this.state;
         const newValidations = { ...validations, request: resolverValidation };
@@ -130,21 +106,24 @@ class ResolverDialog extends Component {
         const { validations } = this.state;
         const newValidations = { ...validations, response: responseValidation };
 
-        this.setState({ response, validations: newValidations});
+        this.setState({ response, validations: newValidations });
     }
 
     renderDataSources(data) {
         const { dataSources } = data;
-        return dataSources.map(dataSource => {
-            return (<MenuItem key={dataSource.name} eventKey={dataSource}>
+        return dataSources.map(dataSource => (
+            <MenuItem key={dataSource.name} eventKey={dataSource}>
                 {`${dataSource.name} (${dataSource.type})`}
-            </MenuItem>);
-        });
+            </MenuItem>
+        ));
     }
 
     renderDialog(data) {
         const { visible } = this.props;
         const { dataSource, validations, err } = this.state;
+
+        console.log("render resolver dialog");
+        console.log(this.state.response);
 
         return (
             <Modal show={visible}>
@@ -194,7 +173,8 @@ class ResolverDialog extends Component {
                                 <div style={{
                                     height: "120px",
                                     border: "1px solid lightgrey"
-                                }}>
+                                }}
+                                >
                                     <CodeEditor
                                         value={this.state.request}
                                         onChange={r => this.onRequestChanged(r)}
@@ -209,7 +189,8 @@ class ResolverDialog extends Component {
                                 <div style={{
                                     height: "120px",
                                     border: "1px solid lightgrey"
-                                }}>
+                                }}
+                                >
                                     <CodeEditor
                                         value={this.state.response}
                                         onChange={r => this.onResponseChanged(r)}
@@ -242,14 +223,21 @@ class ResolverDialog extends Component {
     }
 
     render() {
-        return (<Query query={GetDataSources} variables={{name: undefined}}>
-            {({loading, error, data}) => {
-                if (loading) return null;
-                if (error) return null;
-                return this.renderDialog(data);
-            }}
-        </Query>);
+        return (
+            <Query query={GetDataSources} variables={{ name: undefined }}>
+                {({ loading, error, data }) => {
+                    if (loading) {
+                        return null;
+                    }
+                    if (error) {
+                        return null;
+                    }
+                    return this.renderDialog(data);
+                }}
+            </Query>
+        );
     }
+
 }
 
 const ResolverDialogWithMutation = graphql(UpsertResolver)(ResolverDialog);

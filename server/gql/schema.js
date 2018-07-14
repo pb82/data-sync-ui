@@ -67,45 +67,44 @@ const createDataSource = async ({ name, type, config }) => {
     return created;
 };
 
-const listDataSources = ({name}) => {
+const listDataSources = ({ name }) => {
     info("listDataSources request");
     if (name) {
         const operator = supportsiLike() ? database.Op.iLike : database.Op.like;
-        return dataSource.findAll({where: {name: {[operator]: `%${name}%`}}});
+        return dataSource.findAll({ where: { name: { [operator]: `%${name}%` } } });
     }
     return dataSource.findAll();
 };
 
-const listResolvers = ({schemaId, type}) => {
-    return resolver.findAll({
-        where: {
-            GraphQLSchemaId: schemaId,
-            type
-        },
-        include: {
-            model: dataSource,
-            as: 'DataSource'
-        }
-    });
-};
+const listResolvers = ({ schemaId, type }) => resolver.findAll({
+    where: {
+        GraphQLSchemaId: schemaId,
+        type
+    },
+    include: {
+        model: dataSource,
+        as: "DataSource"
+    }
+});
 
-const upsertResolver = async ({id, schemaId, dataSourceId, type, field,
-                                  requestMapping, responseMapping}) => {
+const upsertResolver = async ({
+    id, schemaId, dataSourceId, type, field,
+    requestMapping, responseMapping
+}) => {
     const properties = {
         GraphQLSchemaId: schemaId,
         DataSourceId: dataSourceId,
         requestMapping,
         responseMapping,
         type,
-        field,
+        field
     };
 
     if (id) {
         const updated = await resolver.findById(id);
         return updated.update(properties);
-    } else {
-        return resolver.create(properties);
     }
+    return resolver.create(properties);
 };
 
 const getOneDataSource = ({ id }) => {
@@ -210,4 +209,4 @@ const root = {
     getSchema
 };
 
-module.exports = {Schema, root};
+module.exports = { Schema, root };

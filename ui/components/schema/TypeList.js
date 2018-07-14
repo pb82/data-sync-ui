@@ -1,43 +1,47 @@
 import React, { Component } from "react";
 import { Query } from "react-apollo";
-import { ResolverDialog } from "./ResolverDialog";
 import {
     ListViewItem, Grid, Row, Col
 } from "patternfly-react";
+import { ResolverDialog } from "./ResolverDialog";
 
 import style from "./structureView.css";
 import GetResolvers from "../../graphql/GetResolvers.graphql";
 
 class TypeList extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            selectedResolver: undefined,
+            selectedResolver: {},
             showModal: false,
             fieldName: ""
         };
     }
 
     deleteResolver(resolver) {
-        console.log("Delete resolver clicked");
-        console.log(resolver);
     }
 
     editResolver(resolver) {
-        console.log("set resolver to");
-        console.log(resolver);
+        console.log("selected resolver");
+        console.log(resolver.responseMapping);
+
         this.setState({
             showModal: true,
             selectedResolver: resolver,
             fieldName: resolver.field
-        })
+        });
     }
 
     createResolver(fieldName) {
         this.setState({
             fieldName,
             showModal: true,
-            selectedResolver: undefined
+            selectedResolver: {
+                dataSource: {
+                    name: ""
+                }
+            }
         });
     }
 
@@ -46,7 +50,7 @@ class TypeList extends Component {
     }
 
     renderError(error) {
-        return <div>{error.message}</div>
+        return <div>{error.message}</div>;
     }
 
     renderAdditionalInfo(type) {
@@ -59,38 +63,41 @@ class TypeList extends Component {
 
     renderResolverForField(name, data) {
         const { resolvers } = data;
-        const resolver = resolvers.find(item => {
-            return item.field === name;
-        });
+        const resolver = resolvers.find(item => item.field === name);
 
         if (resolver) {
-           return (
-               <div style={{textAlign: "center"}}>
-                <span
-                 style={{width: "100%", textAlign: "center", cursor: "pointer", display: "inline"}}
-                 className="pficon pficon-delete"
-                 onClick={() => this.deleteResolver(resolver)}
-                />
-                <span
-                   style={{
-                       width: "100%",
-                       textAlign: "center",
-                       cursor: "pointer",
-                       display: "inline",
-                       marginLeft: "5px"
-                   }}
-                   className="pficon pficon-edit"
-                   onClick={() => this.editResolver(resolver)}
-                />
-               </div>
+            return (
+                <div style={{ textAlign: "center" }}>
+                    <span
+                        role="button"
+                        style={{ width: "100%", textAlign: "center", cursor: "pointer", display: "inline" }}
+                        className="pficon pficon-delete"
+                        onClick={() => this.deleteResolver(resolver)}
+                    />
+                    <span
+                        style={{
+                            width: "100%",
+                            textAlign: "center",
+                            cursor: "pointer",
+                            display: "inline",
+                            marginLeft: "5px"
+                        }}
+                        role="button"
+                        className="pficon pficon-edit"
+                        onClick={() => this.editResolver(resolver)}
+                    />
+                </div>
             );
         }
 
-        return <span
-            style={{width: "100%", textAlign: "center", cursor: "pointer"}}
-            className="pficon pficon-add-circle-o"
-            onClick={() => this.createResolver(name)}
-        />;
+        return (
+            <span
+                style={{ width: "100%", textAlign: "center", cursor: "pointer" }}
+                className="pficon pficon-add-circle-o"
+                role="button"
+                onClick={() => this.createResolver(name)}
+            />
+        );
     }
 
     renderFields(fields, data) {
@@ -145,29 +152,45 @@ class TypeList extends Component {
                     </Row>
                     {subItems}
                     <ResolverDialog
+                        id={this.state.selectedResolver.id}
                         type={this.props.type.name}
                         field={this.state.fieldName}
                         schemaId={this.props.schemaId}
+                        request={this.state.selectedResolver.requestMapping}
+                        response={this.state.selectedResolver.responseMapping}
+                        dataSource={this.state.selectedResolver.DataSource}
                         visible={this.state.showModal}
-                        selectedResolver={this.state.selectedResolver}
-                        onClose={() => { this.setState({showModal: false})} }/>
+                        onClose={() => {
+                            this.setState({ showModal: false });
+                        }}
+                    />
                 </Grid>
             </ListViewItem>
         );
     }
 
     render() {
-        return <Query query={GetResolvers} variables={{
-            schemaId: this.props.schemaId,
-            type: this.props.type.name
-        }}>
-            {({loading, error, data}) => {
-                if (loading) return this.renderLoading();
-                if (error) return this.renderError(error);
-                return this.renderList(data);
-            }}
-        </Query>
+        return (
+            <Query
+                query={GetResolvers}
+                variables={{
+                    schemaId: this.props.schemaId,
+                    type: this.props.type.name
+                }}
+            >
+                {({ loading, error, data }) => {
+                    if (loading) {
+                        return this.renderLoading();
+                    }
+                    if (error) {
+                        return this.renderError(error);
+                    }
+                    return this.renderList(data);
+                }}
+            </Query>
+        );
     }
+
 }
 
 export { TypeList };

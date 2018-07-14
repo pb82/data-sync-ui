@@ -127,6 +127,7 @@ class SchemaContainer extends Component {
 
         return this.renderContent();
     }
+
 }
 
 // Automatically fetch the default schema

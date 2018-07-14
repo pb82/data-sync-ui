@@ -1,7 +1,5 @@
 import React from "react";
-import {
-    Alert, ListView, ListViewItem, Grid, Row, Col
-} from "patternfly-react";
+import { Alert, ListView } from "patternfly-react";
 import { EmptyStructureView } from "./EmptyStructureView";
 import { TypeList } from "./TypeList";
 import style from "./structureView.css";
@@ -28,13 +26,13 @@ const renderListView = (compiled, schemaId) => {
     return (
         <ListView>
             {
-                relevantTypes.map((type, index) => {
-                    return <TypeList
-                        key={type + index}
+                relevantTypes.map(type => (
+                    <TypeList
+                        key={type}
                         schemaId={schemaId}
                         type={type}
-                    />;
-                })
+                    />
+                ))
             }
         </ListView>
     );
