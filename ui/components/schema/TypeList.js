@@ -6,21 +6,9 @@ import {
 
 import style from "./structureView.css";
 import GetResolvers from "../../graphql/GetResolvers.graphql";
+import { formatGraphQLField } from "./GraphQLFormatter";
 
 class TypeList extends Component {
-
-    deleteResolver(resolver) {
-        console.log(resolver);
-    }
-
-    editResolver(resolver) {
-        console.log("selected resolver");
-        console.log(resolver.responseMapping);
-    }
-
-    createResolver(fieldName) {
-        console.log(fieldName);
-    }
 
     renderLoading() {
         return <Spinner className="spinner" loading />;
@@ -30,48 +18,14 @@ class TypeList extends Component {
         return <div>{error.message}</div>;
     }
 
-    renderAdditionalInfo({ fields }) {
-        if (fields && fields.length) {
-            return fields.length + (fields.length > 1 ? " fields" : " field");
-        }
-        return "n.a.";
-    }
-
     renderResolverForField(name, data) {
         const { resolvers } = data;
         const resolver = resolvers.find(item => item.field === name);
         if (resolver) {
-            return (
-                <React.Fragment>
-                    <Button
-                        className={style["structure-item-edit-btn"]}
-                        bsStyle="primary"
-                        bsSize="small"
-                        onClick={() => this.editResolver(resolver)}
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        className={style["structure-item-delete-btn"]}
-                        bsStyle="danger"
-                        bsSize="small"
-                        onClick={() => this.deleteResolver(resolver)}
-                    >
-                        Delete
-                    </Button>
-                </React.Fragment>
-            );
+            return <span>{resolver.DataSource.name}</span>
         }
 
-        return (
-            <Button
-                bsStyle="primary"
-                bsSize="small"
-                onClick={() => console.log("Clicked create resolver")}
-            >
-                Add Resolver
-            </Button>
-        );
+        return <span style={{color: "lightgrey"}}>No resolver</span>;
     }
 
     renderFields(fields, data) {
@@ -84,13 +38,10 @@ class TypeList extends Component {
             const type = field.type.name || field.type.kind;
             return (
                 <Row key={type + field.name} className={style["structure-item-row"]}>
-                    <Col xs={6} md={4}>
-                        {field.name}
+                    <Col xs={6} md={6} style={{textAlign: "left"}}>
+                        {formatGraphQLField(field)}
                     </Col>
-                    <Col xs={6} md={4}>
-                        {type}
-                    </Col>
-                    <Col xs={6} md={4}>
+                    <Col xs={6} md={6} style={{textAlign: "right"}}>
                         {this.renderResolverForField(field.name, data)}
                     </Col>
                 </Row>
@@ -103,32 +54,10 @@ class TypeList extends Component {
         const subItems = this.renderFields(type.fields, data);
 
         return (
-            <ListViewItem
-                key={type.name}
-                leftContent={<p className={style["structure-name"]}>{type.name}</p>}
-                description={<span />}
-                hideCloseIcon
-                additionalInfo={[
-                    <p key={type.name} className={style["structure-name"]}>
-                        {this.renderAdditionalInfo(type)}
-                    </p>]}
-            >
-                <Grid fluid>
-                    <Row className={style["structure-field-row"]}>
-                        <Col xs={6} md={4}>
-                            Field Name
-                        </Col>
-                        <Col xs={6} md={4}>
-                            Field Type
-                        </Col>
-                        <Col xs={6} md={4}>
-                            Resolver
-                        </Col>
-                    </Row>
-                    {subItems}
-                    <div hidden="true">Resolver Dialog Here</div>
-                </Grid>
-            </ListViewItem>
+            <Grid fluid>
+                {subItems}
+            </Grid>
+
         );
     }
 
