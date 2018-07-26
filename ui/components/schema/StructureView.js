@@ -21,9 +21,38 @@ const wellKnownTypes = [
     "__DirectiveLocation"
 ];
 
+const sections = {
+    queries: [],
+    mutations: [],
+    subscriptions: [],
+    custom: []
+};
+
+const groupTypes = (relevantTypes, query, mutation, subscription) => {
+    return relevantTypes.reduce((acc, type) => {
+        switch(type.name) {
+            case query.name:
+                acc.queries.push(type);
+                break;
+            case mutation.name:
+                acc.mutations.push(type);
+                break;
+            case subscription.name:
+                acc.subscriptions.push(type);
+                break;
+            default:
+                acc.custom.push(type);
+        }
+        return acc;
+    }, sections);
+};
+
 const renderListView = (compiled, schemaId) => {
-    const { types } = compiled.data.__schema;
+    const { types, queryType, mutationType, subscriptionType } = compiled.data.__schema;
     const relevantTypes = types.filter(type => wellKnownTypes.indexOf(type.name) < 0);
+
+    const grouped = groupTypes(relevantTypes, queryType, mutationType, subscriptionType);
+
     return (
         <ListView>
             {
