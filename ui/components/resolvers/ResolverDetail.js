@@ -106,7 +106,7 @@ class ResolverDetail extends Component {
             resolver[type] = templateValue;
             this.setState({
                 resolver,
-                resolverSaved: false,
+                isResolverSaved: false,
                 [`${type}Template`]: template
             });
         }
@@ -124,8 +124,9 @@ class ResolverDetail extends Component {
     }
 
     render() {
-        const { resolver, requestMappingTemplate, responseMappingTemplate, isResolverSaved
-        , responseMappingTemplates, requestMappingTemplates
+        const {
+            resolver, requestMappingTemplate, responseMappingTemplate, isResolverSaved,
+            responseMappingTemplates, requestMappingTemplates
         } = this.state;
 
         if (!resolver) {
