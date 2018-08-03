@@ -86,20 +86,30 @@ class ResolverDetail extends Component {
     }
 
     onDataSourceChanged(ds) {
-        console.log("data source changed");
         const requestMappingTemplates = getTemplatesForDataSource(ds, "requestMapping");
         const responseMappingTemplates = getTemplatesForDataSource(ds, "responseMapping");
 
-        console.log(requestMappingTemplates);
-        console.log(responseMappingTemplates);
+        const { resolver } = this.state;
 
-        this.setState({ DataSource: ds, requestMappingTemplates, responseMappingTemplates });
+        if (resolver) {
+            resolver.DataSource = ds;
+            this.setState({ resolver, requestMappingTemplates, responseMappingTemplates });
+        }
     }
 
     onTemplateChanged(type, template) {
-        const { DataSource } = this.state;
+        const { resolver } = this.state;
+        const { DataSource } = resolver;
         const templateValue = getTemplateValue(DataSource, type, template);
-        this.setState({ [type]: templateValue, [`${type}Template`]: template });
+
+        if (resolver) {
+            resolver[type] = templateValue;
+            this.setState({
+                resolver,
+                resolverSaved: false,
+                [`${type}Template`]: template
+            });
+        }
     }
 
     renderEmptyScreen() {
@@ -114,7 +124,9 @@ class ResolverDetail extends Component {
     }
 
     render() {
-        const { resolver, requestMappingTemplate, responseMappingTemplate, isResolverSaved } = this.state;
+        const { resolver, requestMappingTemplate, responseMappingTemplate, isResolverSaved
+        , responseMappingTemplates, requestMappingTemplates
+        } = this.state;
 
         if (!resolver) {
             return this.renderEmptyScreen();

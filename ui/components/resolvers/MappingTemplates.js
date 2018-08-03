@@ -24,24 +24,24 @@ const PostgresResponse = `
 
 const Templates = {
     [DataSourceType.InMemory]: {
-        "requestMapping": {
+        requestMapping: {
             ...defaultTemplates,
             "In Memory Query": InMemoryQuery
         },
-        "responseMapping": {
+        responseMapping: {
             ...defaultTemplates,
             "In Memory Response": InMemoryResponse
-        },
+        }
     },
     [DataSourceType.Postgres]: {
-        "requestMapping": {
+        requestMapping: {
             ...defaultTemplates,
             "Postgres Query": PostgresQuery
         },
-        "responseMapping": {
+        responseMapping: {
             ...defaultTemplates,
             "Postgres Response": PostgresResponse
-        },
+        }
     }
 };
 
