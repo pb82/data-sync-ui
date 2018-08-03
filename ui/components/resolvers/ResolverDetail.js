@@ -133,7 +133,7 @@ class ResolverDetail extends Component {
             return this.renderEmptyScreen();
         }
 
-        const { field, type, DataSource, requestMapping, responseMapping } = resolver;
+        const { field, type, DataSource, requestMapping, responseMapping, preHook, postHook } = resolver;
 
         return (
             <React.Fragment>
